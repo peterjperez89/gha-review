@@ -1,0 +1,32 @@
+name: EKS Deployment #name of workflow pipeline
+
+on:
+  workflow_run:
+    workflows: ["Build Pipeline"]
+    types:
+      - completed
+
+jobs:
+  k8deploy: #job name
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone Codebase
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: Update EKS kubeconfig
+      run: aws eks update-kubeconfig --name tfcluster --region us-west-1
+
+    - name: Create namespace
+      run: kubectl create namespace web
+
+    - name: Apply Deployment
+      run: kubectl apply -f deployment.yaml
+      working-directory: kubernetes

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: httpd-deployment
+  namespace: web
+  labels: #could be any label
+    type: deployment
+spec:
+  replicas: 2 #how many pods to create
+  selector:
+    matchLabels: #manage pods with httpd resources
+      app: httpd #finds label with httpd
+  template: #what pod we are creating, ex: httpd
+    metadata:
+      labels:
+        app: httpd
+    spec: #specs for containers to execute in the pod
+      containers:
+      - name: httpd-container
+        image: peterjperez89/myhttpd:latest
+        resources:
+          limits:
+            memory: "128Mi" #megabytes, how much memory space to add
+            cpu: "250m" #how much cpy memory to add
+        ports:
+        - containerPort: 80

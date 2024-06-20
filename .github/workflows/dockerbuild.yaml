@@ -1,0 +1,38 @@
+name: Build Pipeline
+
+on: #conditions that trigger the pipeline to run
+    push:
+        tags:
+            - '*'
+
+jobs:
+    build_and_push: #name can be anything
+        runs-on: ubuntu-latest #the os of the machine provided by gha that runs your jobs
+
+        steps:
+        - name: checkout code
+          uses: actions/checkout@v2
+
+        - name: setup docker
+          uses: docker/setup-buildx-action@v2
+
+        - name: build and tag docker image (incremental)
+          run: |
+            docker build -t "${{ secrets.DOCKER_USERID }}/myhttpd:${{ github.ref_name }}" .
+          working-directory: Docker
+
+        - name: build and tag docker image (latest)
+          run: |
+            docker build -t "${{ secrets.DOCKER_USERID }}/myhttpd:latest" .
+          working-directory: Docker
+  
+        - name: log into docker hub
+          run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+        - name: Push Docker image to Docker Hub
+          run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/myimage:${{ github.ref_name }}"
+          working-directory: Docker
+
+        - name: Push Docker image to Docker Hub
+          run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/myimage:latest"
+          working-directory: Docker

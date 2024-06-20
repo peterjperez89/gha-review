@@ -34,5 +34,5 @@ jobs:
           working-directory: Docker
 
         - name: Push Docker image to Docker Hub
-          run: docker push "${{ secrets.DOCKERgit _USERID }}/myhttpd:latest"
+          run: docker push "${{ secrets.DOCKER_USERID }}/myhttpd:latest"
           working-directory: Docker

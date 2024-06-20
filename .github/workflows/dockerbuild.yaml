@@ -27,12 +27,12 @@ jobs:
           working-directory: Docker
   
         - name: log into docker hub
-          run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERID }}" --password-stdin
 
         - name: Push Docker image to Docker Hub
-          run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/myimage:${{ github.ref_name }}"
+          run: docker push "${{ secrets.DOCKER_USERID }}/myhttpd:${{ github.ref_name }}"
           working-directory: Docker
 
         - name: Push Docker image to Docker Hub
-          run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/myimage:latest"
+          run: docker push "${{ secrets.DOCKERgit _USERID }}/myhttpd:latest"
           working-directory: Docker

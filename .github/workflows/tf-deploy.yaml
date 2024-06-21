@@ -1,0 +1,50 @@
+name: Terraform Deploy #see INFRA PIPELINE on Ch 16 slides
+
+on: # what is triggers this specific workflow to run
+  push: #event
+    branches: #name-specific to existing branch names
+      - main
+  pull_request: #pull request for specific branch
+    branches: #name-specific to existing branch names
+      - main
+  workflow_dispatch: #creates a button on the UI that allows you to manually run this workflow
+
+jobs: #consists of steps for your workflow
+  infra-deploy: #can be any name
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone Codebase
+      uses: actions/checkout@v2 #uses: github action
+
+    - name: HashiCorp - Setup Terraform
+      uses: hashicorp/setup-terraform@v1 #uses; action sets up terraform
+      with: #parameters that specifies the version for this action
+        terraform_version: 1.1.0
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+      
+    - name: Terraform Init
+      id: Init
+      run: terraform init
+      working-directory: terraform
+
+    - name: Terraform Validate
+      id: Validate
+      run: terraform validate
+      working-directory: terraform
+    
+    - name: Terraform Plan
+      id: Plan
+      run: terraform plan
+      working-directory: terraform
+
+    - name: Terraform Apply
+      id: Apply
+      run: terraform apply -auto-approve
+      working-directory: terraform
